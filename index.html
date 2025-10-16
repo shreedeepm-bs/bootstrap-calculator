@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Calculator</title>
+    <title>Simple Calculator (Dark Mode Only)</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Custom CSS -->
     <style>
-        /* --- CSS Variables for Themes --- */
-        /* Dark Mode 1 Variables (Default when 'dark-mode' class is NOT present) */
-        /* This theme is based on the original 'body.dark-mode' values */
+        /* --- CSS Variables for Dark Themes --- */
+        /* Dark Theme Variant 1 Variables (Default, less deep dark) */
+        /* This theme is based on the original 'body' values without the 'dark-mode' class */
         body {
             --bg-color: #343a40; /* Darker body background */
             --text-color: #f8f9fa; /* Lighter text color */
@@ -32,7 +32,7 @@
             --btn-clear-hover-bg: #a71d2a;
         }
 
-        /* Dark Mode 2 Variables (when 'dark-mode' class IS present) */
+        /* Dark Theme Variant 2 Variables (Deeper Dark, when 'dark-mode' class IS present) */
         /* This is a new, slightly different and potentially deeper dark theme */
         body.dark-mode {
             --bg-color: #212529; /* Even darker body background */
@@ -93,16 +93,6 @@
             border-color: var(--btn-secondary-hover-bg);
             color: var(--btn-num-text); /* Keep text color for hover */
         }
-        body.dark-mode #theme-toggle {
-            background-color: var(--btn-num-bg);
-            border-color: var(--btn-num-bg);
-            color: var(--btn-num-text);
-        }
-        body.dark-mode #theme-toggle:hover {
-            background-color: var(--btn-secondary-hover-bg);
-            border-color: var(--btn-secondary-hover-bg);
-        }
-
 
         /* --- Calculator Specific Styling --- */
         .calculator {
@@ -205,10 +195,7 @@
 <body>
 
     <div class="theme-toggle-container">
-        <button id="theme-toggle" class="btn">
-            <span class="light-icon">☀️</span>
-            <span class="dark-icon d-none">🌙</span>
-        </button>
+        <button id="theme-toggle" class="btn">🌙</button>
     </div>
 
     <div class="calculator card shadow-lg">
@@ -274,46 +261,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- Custom JavaScript for Calculator Logic -->
     <script src="script.js" defer></script>
-    <!-- Theme Toggle Logic (added directly to index.html) -->
+    <!-- Theme Toggle Logic (modified for dark mode only) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
-            const lightIcon = themeToggleBtn.querySelector('.light-icon');
-            const darkIcon = themeToggleBtn.querySelector('.dark-icon');
 
-            // Function to apply theme
-            function applyTheme(theme) {
-                if (theme === 'dark') {
+            // Function to apply a specific dark theme variant
+            // true for Dark Theme Variant 2 (deeper dark), false for Dark Theme Variant 1 (less deep dark)
+            function setDarkThemeVariant(isDarkerVariant) {
+                if (isDarkerVariant) {
                     body.classList.add('dark-mode');
-                    lightIcon.classList.add('d-none'); // Hide sun icon
-                    darkIcon.classList.remove('d-none'); // Show moon icon
+                    localStorage.setItem('darkThemeVariant', 'darker');
                 } else {
                     body.classList.remove('dark-mode');
-                    lightIcon.classList.remove('d-none'); // Show sun icon
-                    darkIcon.classList.add('d-none'); // Hide moon icon
+                    localStorage.setItem('darkThemeVariant', 'less-dark');
                 }
-                localStorage.setItem('theme', theme); // Save user preference
             }
 
-            // Check for saved theme preference or set default on load
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                applyTheme(savedTheme);
+            // Check for saved dark theme variant preference
+            const savedVariant = localStorage.getItem('darkThemeVariant');
+            if (savedVariant === 'less-dark') {
+                setDarkThemeVariant(false); // Apply Dark Theme Variant 1
             } else {
-                // Default to dark mode (Dark Mode 2) if system prefers dark, else default to Dark Mode 1
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    applyTheme('dark');
-                } else {
-                    applyTheme('light'); // 'light' here means Dark Mode 1 (no 'dark-mode' class)
-                }
+                // Default to Dark Theme Variant 2 (deeper dark) if no preference or saved as 'darker'
+                setDarkThemeVariant(true);
             }
 
-            // Toggle theme on button click
+            // Toggle dark theme variant on button click
             themeToggleBtn.addEventListener('click', () => {
-                const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                applyTheme(newTheme);
+                const currentVariantIsDarker = body.classList.contains('dark-mode');
+                setDarkThemeVariant(!currentVariantIsDarker); // Toggle to the other dark variant
             });
         });
     </script>

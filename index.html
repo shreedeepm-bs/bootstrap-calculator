@@ -259,11 +259,10 @@
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Custom JavaScript for Calculator Logic -->
-    <script src="script.js" defer></script>
-    <!-- Theme Toggle Logic (modified for dark mode only) -->
+    <!-- Custom JavaScript for Calculator Logic and Theme Toggle -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Theme Toggle Logic (modified for dark mode only) ---
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
 
@@ -279,19 +278,130 @@
                 }
             }
 
-            // Check for saved dark theme variant preference
+            // Check for saved dark theme variant preference and apply it
             const savedVariant = localStorage.getItem('darkThemeVariant');
             if (savedVariant === 'less-dark') {
-                setDarkThemeVariant(false); // Apply Dark Theme Variant 1
+                setDarkThemeVariant(false); // Apply Dark Theme Variant 1 (less deep dark)
             } else {
                 // Default to Dark Theme Variant 2 (deeper dark) if no preference or saved as 'darker'
                 setDarkThemeVariant(true);
             }
+            
+            // Set initial icon based on the applied theme (🌑 for deeper dark, 🌙 for less deep dark)
+            themeToggleBtn.innerText = body.classList.contains('dark-mode') ? '🌑' : '🌙';
 
             // Toggle dark theme variant on button click
             themeToggleBtn.addEventListener('click', () => {
                 const currentVariantIsDarker = body.classList.contains('dark-mode');
                 setDarkThemeVariant(!currentVariantIsDarker); // Toggle to the other dark variant
+                // Update the icon immediately after toggling
+                themeToggleBtn.innerText = body.classList.contains('dark-mode') ? '🌑' : '🌙';
+            });
+
+            // --- Custom JavaScript for Calculator Logic ---
+            class Calculator {
+                constructor(displayElement) {
+                    this.displayElement = displayElement;
+                    this.clear();
+                }
+
+                clear() {
+                    this.currentOperand = '0';
+                    this.previousOperand = '';
+                    this.operation = undefined;
+                    this.updateDisplay();
+                }
+
+                appendNumber(number) {
+                    if (number === '.' && this.currentOperand.includes('.')) return;
+                    // If current operand is '0' and a non-decimal number is pressed, replace '0'
+                    if (this.currentOperand === '0' && number !== '.') {
+                        this.currentOperand = number;
+                    } else {
+                        this.currentOperand = this.currentOperand.toString() + number.toString();
+                    }
+                    this.updateDisplay();
+                }
+
+                chooseOperation(operation) {
+                    if (this.currentOperand === '' || this.currentOperand === '.') return; // Prevent operations on empty or just a dot
+                    if (this.previousOperand !== '') {
+                        this.compute(); // If there's a previous operation, compute it first
+                    }
+                    this.operation = operation;
+                    this.previousOperand = this.currentOperand;
+                    this.currentOperand = ''; // Clear current operand for the next number
+                    this.updateDisplay();
+                }
+
+                compute() {
+                    let computation;
+                    const prev = parseFloat(this.previousOperand);
+                    const current = parseFloat(this.currentOperand);
+
+                    // If either operand is not a number, or if there's no current operation, do nothing
+                    if (isNaN(prev) || isNaN(current) || this.operation === undefined) return;
+
+                    switch (this.operation) {
+                        case '+':
+                            computation = prev + current;
+                            break;
+                        case '-':
+                            computation = prev - current;
+                            break;
+                        case '*':
+                            computation = prev * current;
+                            break;
+                        case '/':
+                            if (current === 0) {
+                                this.currentOperand = 'Error'; // Handle division by zero
+                                this.operation = undefined;
+                                this.previousOperand = '';
+                                this.updateDisplay();
+                                return;
+                            }
+                            computation = prev / current;
+                            break;
+                        default:
+                            return;
+                    }
+                    this.currentOperand = computation.toString();
+                    this.operation = undefined;
+                    this.previousOperand = '';
+                    this.updateDisplay();
+                }
+
+                updateDisplay() {
+                    this.displayElement.innerText = this.currentOperand;
+                }
+            }
+
+            const numberButtons = document.querySelectorAll('[data-number]');
+            const operationButtons = document.querySelectorAll('[data-operation]');
+            const equalsButton = document.querySelector('[data-equals]');
+            const allClearButton = document.querySelector('[data-all-clear]');
+            const displayElement = document.querySelector('[data-display]');
+
+            const calculator = new Calculator(displayElement);
+
+            numberButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    calculator.appendNumber(button.innerText);
+                });
+            });
+
+            operationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    calculator.chooseOperation(button.innerText);
+                });
+            });
+
+            equalsButton.addEventListener('click', button => {
+                calculator.compute();
+            });
+
+            allClearButton.addEventListener('click', button => {
+                calculator.clear();
             });
         });
     </script>

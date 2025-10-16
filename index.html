@@ -1,8 +1,3 @@
-The provided code already perfectly implements the requirements for adding dark and light mode themes with a toggle. It uses CSS variables for dynamic styling and JavaScript to toggle the `dark-mode` class on the `body`, persist the user's preference using `localStorage`, and respect the system's preferred color scheme.
-
-Therefore, no modifications are needed, and the current code is the solution.
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,30 +9,9 @@ Therefore, no modifications are needed, and the current code is the solution.
     <!-- Custom CSS -->
     <style>
         /* --- CSS Variables for Themes --- */
-        /* Light Mode Variables (Default) */
+        /* Dark Mode 1 Variables (Default when 'dark-mode' class is NOT present) */
+        /* This theme is based on the original 'body.dark-mode' values */
         body {
-            --bg-color: #f8f9fa; /* Body background */
-            --text-color: #212529; /* Default text color */
-            --calculator-bg: #ffffff; /* Calculator card background */
-            --display-bg: #212529; /* Calculator display background */
-            --display-text: #ffffff; /* Calculator display text */
-            --btn-num-bg: #6c757d; /* Number buttons background (Bootstrap btn-secondary default) */
-            --btn-num-text: #ffffff; /* Number buttons text */
-            --btn-op-bg: #ffc107; /* Operator buttons background (Bootstrap btn-warning default) */
-            --btn-op-text: #343a40; /* Operator buttons text */
-            --btn-eq-bg: #0d6efd; /* Equals button background (Bootstrap btn-primary default) */
-            --btn-eq-text: #ffffff; /* Equals button text */
-            --btn-clear-bg: #dc3545; /* Clear button background (Bootstrap btn-danger default) */
-            --btn-clear-text: #ffffff; /* Clear button text */
-            --shadow-color: rgba(0, 0, 0, 0.175); /* Shadow color for card */
-            --btn-secondary-hover-bg: #5c636a;
-            --btn-operator-hover-bg: #e0a800;
-            --btn-equals-hover-bg: #0a58ca;
-            --btn-clear-hover-bg: #bb2d3b;
-        }
-
-        /* Dark Mode Variables */
-        body.dark-mode {
             --bg-color: #343a40; /* Darker body background */
             --text-color: #f8f9fa; /* Lighter text color */
             --calculator-bg: #212529; /* Darker calculator card */
@@ -56,6 +30,29 @@ Therefore, no modifications are needed, and the current code is the solution.
             --btn-operator-hover-bg: #c78d00;
             --btn-equals-hover-bg: #084298;
             --btn-clear-hover-bg: #a71d2a;
+        }
+
+        /* Dark Mode 2 Variables (when 'dark-mode' class IS present) */
+        /* This is a new, slightly different and potentially deeper dark theme */
+        body.dark-mode {
+            --bg-color: #212529; /* Even darker body background */
+            --text-color: #e0e0e0; /* Slightly less bright text */
+            --calculator-bg: #1a1d20; /* Deep dark calculator card */
+            --display-bg: #343a40; /* Darker display */
+            --display-text: #e0e0e0; /* Lighter display text */
+            --btn-num-bg: #3a4046; /* Slightly darker grey for number buttons */
+            --btn-num-text: #e0e0e0; /* Lighter text for number buttons */
+            --btn-op-bg: #cc9000; /* More muted yellow for contrast */
+            --btn-op-text: #1a1d20; /* Dark text for operator buttons */
+            --btn-eq-bg: #084d9f; /* Deeper blue */
+            --btn-eq-text: #ffffff;
+            --btn-clear-bg: #b02735; /* Deeper red */
+            --btn-clear-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.7); /* Even darker shadow */
+            --btn-secondary-hover-bg: #2b3035;
+            --btn-operator-hover-bg: #aa7d00;
+            --btn-equals-hover-bg: #063a7a;
+            --btn-clear-hover-bg: #90202c;
         }
 
         /* --- Global Styling & Theme Application --- */
@@ -304,11 +301,11 @@ Therefore, no modifications are needed, and the current code is the solution.
             if (savedTheme) {
                 applyTheme(savedTheme);
             } else {
-                // Default to light mode or check system preference
+                // Default to dark mode (Dark Mode 2) if system prefers dark, else default to Dark Mode 1
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     applyTheme('dark');
                 } else {
-                    applyTheme('light');
+                    applyTheme('light'); // 'light' here means Dark Mode 1 (no 'dark-mode' class)
                 }
             }
 

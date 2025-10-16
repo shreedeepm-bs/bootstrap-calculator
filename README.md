@@ -15,3 +15,7 @@ App is deployed on GitHub Pages
 
 ### Round 2 Update
 - Modify the existing calculator app to include dark mode and light mode themes with a toggle icon. The toggle should dynamically change the UI theme using Bootstrap classes or CSS variables.
+
+
+### Round 2 Update
+- Modify the existing calculator app to include dark mode only. The toggle should dynamically change the UI theme using tailwind css or CSS variables.
